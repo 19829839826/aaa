@@ -1,16 +1,21 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
-import { Input, Button } from 'antd';
+import { Input, Button, Select } from 'antd';
 const { TextArea } = Input;
 
 function Demo() {
     console.log(1);
     const synth = window.speechSynthesis;
-
+    const [list, setlist] = useState<any>([])
+    const [curlang, setcurlang] = useState('')
+    const [alllang, setalllang] = useState([])
     const inpuRef = useRef(null)
 
     let voices = [];
 
-
+    const handleChange = (value: string) => {
+        console.log(`selected ${value}`);
+        setcurlang(value)
+    };
     function populateVoiceList() {
         voices = synth.getVoices().sort(function (a, b) {
             const aname = a.name.toUpperCase();
@@ -24,7 +29,15 @@ function Demo() {
                 return +1;
             }
         });
+        setalllang(voices)
         console.log(voices);
+        if (voices && Array.isArray(voices)) {
+            setlist(voices.map(v => ({
+                label: v.name,
+                value: v.name
+            })))
+        }
+
 
     }
     if (speechSynthesis.onvoiceschanged !== undefined) {
@@ -49,14 +62,15 @@ function Demo() {
                 console.error("SpeechSynthesisUtterance.onerror");
             };
 
-            for (let i = 0; i < voices.length; i++) {
-                if (voices[i].lang.includes('zh')) {
-                    utterThis.voice = voices[i];
+            for (let i = 0; i < alllang.length; i++) {
+                if (alllang[i].name ===curlang) {
+                    utterThis.voice = alllang[i];
                     break;
                 }
             }
             utterThis.pitch = '1'
             utterThis.rate = '1';
+            console.log(utterThis,curlang,alllang);
             synth.speak(utterThis);
         }
     }
@@ -74,7 +88,16 @@ function Demo() {
     return (
         <div>
             <TextArea ref={inpuRef} />
-            <Button onClick={click} type="primary" style={{ marginTop: 20 }}>播放</Button>
+            <Select
+                style={{ width: 250, marginTop: 20 }}
+                onChange={handleChange}
+                options={list}
+                placeholder="点我选择语言"
+            />
+            <div>
+                <Button onClick={click} type="primary" style={{ marginTop: 20 }}>播放</Button>
+
+            </div>
         </div>
     );
 }
