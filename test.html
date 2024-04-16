@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Layui Table 表格字段 templet 绑定事件</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.6.8/css/layui.css">
+</head>
+<body>
+ 
+<table id="demo" lay-filter="test"></table>
+ 
+<script src="https://cdn.staticfile.org/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/layui/2.6.8/layui.js"></script>
+<script>
+layui.use(['table', 'jquery'], function(){
+  var table = layui.table;
+  var $ = layui.jquery;
+  
+  // 渲染表格
+  table.render({
+    elem: '#demo',
+    url: '/demo/table/user/', // 数据接口
+    cols: [[ // 表头
+      {field: 'id', title: 'ID', width: 80, sort: true},
+      {field: 'username', title: '用户名', width: 120},
+      {field: 'email', title: '邮箱', width: 150},
+      {field: 'operation', title: '操作', templet: '#operationTpl'} // 自定义操作列，使用 templet 属性指定模板
+    ]]
+  });
+  
+  // 监听行工具事件
+  table.on('tool(test)', function(obj){
+    var data = obj.data; // 获取当前行数据
+    var layEvent = obj.event; // 获得 lay-event 对应的值
+    if(layEvent === 'detail'){
+      layer.msg('查看操作');
+    } else if(layEvent === 'edit'){
+      layer.msg('编辑操作');
+    } else if(layEvent === 'delete'){
+      layer.confirm('确定删除该行数据？', function(index){
+        // 这里写删除行数据的逻辑
+        layer.close(index);
+      });
+    }
+  });
+  
+  // 绑定自定义操作列的点击事件
+  $(document).on('click', '.custom-operation', function(){
+    var id = $(this).data('id'); // 获取操作对应的数据 ID
+    // 在这里写自定义操作的逻辑
+    console.log('点击了操作，ID为：' + id);
+  });
+});
+</script>
+
+<!-- 自定义操作列的模板 -->
+<script type="text/html" id="operationTpl">
+  <a class="layui-btn layui-btn-xs custom-operation" lay-event="detail" data-id="{{d.id}}">查看</a>
+  <a class="layui-btn layui-btn-xs layui-btn-normal custom-operation" lay-event="edit" data-id="{{d.id}}">编辑</a>
+  <a class="layui-btn layui-btn-xs layui-btn-danger custom-operation" lay-event="delete" data-id="{{d.id}}">删除</a>
+</script>
+ 
+</body>
+</html>
