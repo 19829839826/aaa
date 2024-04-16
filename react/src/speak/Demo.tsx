@@ -33,8 +33,8 @@ function Demo() {
         console.log(voices);
         if (voices && Array.isArray(voices)) {
             setlist(voices.map(v => ({
-                label: v.name,
-                value: v.name
+                label: v.lang,
+                value: v.lang
             })))
         }
 
@@ -63,7 +63,7 @@ function Demo() {
             };
 
             for (let i = 0; i < alllang.length; i++) {
-                if (alllang[i].name ===curlang) {
+                if (alllang[i].lang ===curlang) {
                     utterThis.voice = alllang[i];
                     break;
                 }
